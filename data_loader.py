@@ -4,12 +4,12 @@ import pandas as pd
 
 def treat_prepro(train, step):
     train_f = open(train, 'r')
-    # Need to change depending on threshold
-    if step==1:
+    # Need to change depending on split ratio
+    if step==1:  # train
         lines = train_f.readlines()#[:86445] #659 #[:309931]
-    elif step==2:
+    elif step==2:  # valid
         lines = train_f.readlines()#[:13505]#[:309931]
-    elif step==3:
+    elif step==3:  # test
         lines = train_f.readlines()#[:30622]#[:309931]
 
     train_user = []
@@ -26,6 +26,7 @@ def treat_prepro(train, step):
 
     for i, line in enumerate(lines):
         tokens = line.strip().split('\t')
+        # userID
         if len(tokens) < 3:
             if user_td: 
                 train_user.append(user)
@@ -39,6 +40,7 @@ def treat_prepro(train, step):
             user_loc = []
             user_dst = []
             continue
+        # time, latitude, longitude, locationID
         td = np.array([float(t) for t in tokens[0].split(',')])
         ld = np.array([float(t) for t in tokens[1].split(',')])
         loc = np.array([int(t) for t in tokens[2].split(',')])
@@ -86,9 +88,11 @@ def load_data(train):
     user_loc = []
     visit_thr = 30
 
+    # user2id
     prev_user = int(lines[0].split('\t')[0])
     visit_cnt = 0
     for i, line in enumerate(lines):
+        # userID, time, latitude, longitude, locationID
         tokens = line.strip().split('\t')
         user = int(tokens[0])
         if user==prev_user:
@@ -104,10 +108,12 @@ def load_data(train):
 
     prev_user = int(lines[0].split('\t')[0])
     for i, line in enumerate(lines):
+        # userID, time, latitude, longitude, locationID
         tokens = line.strip().split('\t')
         user = int(tokens[0])
         if user2id.get(user) is None:
             continue
+        # get user id
         user = user2id.get(user)
 
         time = (datetime.strptime(tokens[1], "%Y-%m-%dT%H:%M:%SZ")\

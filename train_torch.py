@@ -11,6 +11,8 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import data_loader
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+
 # Parameters
 # ==================================================
 ftype = torch.cuda.FloatTensor
