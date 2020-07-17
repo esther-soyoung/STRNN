@@ -62,7 +62,7 @@ print("User/Location: {:d}/{:d}".format(user_cnt, loc_cnt))
 print("==================================================================================")
 
 class STRNNCell(nn.Module):
-    def __init__(self, hidden_size):
+    def __init__(self, hidden_size):  # dim
         super(STRNNCell, self).__init__()
         self.hidden_size = hidden_size
         self.weight_ih = nn.Parameter(torch.Tensor(hidden_size, hidden_size)) # C
@@ -202,12 +202,12 @@ for i in xrange(num_epochs):
         if len(batch_loc) < 3:
             continue
         total_loss += run(batch_user, batch_td, batch_ld, batch_loc, batch_dst, step=1)
-        #if (j+1) % 2000 == 0:
-        #    print("batch #{:d}: ".format(j+1)), "batch_loss :", total_loss/j, datetime.datetime.now()
+        if (j+1) % 2000 == 0:
+           print("batch #{:d}: ".format(j+1), "batch_loss :", total_loss/j, datetime.datetime.now())
     # Evaluation
     if (i+1) % evaluate_every == 0:
         print("==================================================================================")
-        #print("Evaluation at epoch #{:d}: ".format(i+1)), total_loss/j, datetime.datetime.now()
+        print("Evaluation at epoch #{:d}: ".format(i+1), total_loss/j, datetime.datetime.now())
         valid_batches = list(zip(valid_user, valid_td, valid_ld, valid_loc, valid_dst))
         print_score(valid_batches, step=2)
 
