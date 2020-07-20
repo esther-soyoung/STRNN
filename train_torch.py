@@ -53,13 +53,13 @@ except NameError:
 # Data Preparation
 # ===========================================================
 # Load data
-print("Loading data...")
+print("Loading data...", flush=True)
 train_user, train_td, train_ld, train_loc, train_dst = data_loader.treat_prepro(train_file, step=1)
 valid_user, valid_td, valid_ld, valid_loc, valid_dst = data_loader.treat_prepro(valid_file, step=2)
 test_user, test_td, test_ld, test_loc, test_dst = data_loader.treat_prepro(test_file, step=3)
 
-print("User/Location: {:d}/{:d}".format(user_cnt, loc_cnt))
-print("==================================================================================")
+print("User/Location: {:d}/{:d}".format(user_cnt, loc_cnt), flush=True)
+print("==================================================================================", flush=True)
 
 class STRNNCell(nn.Module):
     def __init__(self, hidden_size):  # dim
@@ -144,12 +144,12 @@ def print_score(batches, step):
         recall1000 += target in batch_o[:1000]
         recall10000 += target in batch_o[:10000]
 
-    print("recall@1: ", recall1/iter_cnt)
-    print("recall@5: ", recall5/iter_cnt)
-    print("recall@10: ", recall10/iter_cnt)
-    print("recall@100: ", recall100/iter_cnt)
-    print("recall@1000: ", recall1000/iter_cnt)
-    print("recall@10000: ", recall10000/iter_cnt)
+    print("recall@1: ", recall1/iter_cnt, flush=True)
+    print("recall@5: ", recall5/iter_cnt, flush=True)
+    print("recall@10: ", recall10/iter_cnt, flush=True)
+    print("recall@100: ", recall100/iter_cnt, flush=True)
+    print("recall@1000: ", recall1000/iter_cnt, flush=True)
+    print("recall@10000: ", recall10000/iter_cnt, flush=True)
 
 ###############################################################################################
 def run(user, td, ld, loc, dst, step):
@@ -196,24 +196,24 @@ for i in xrange(num_epochs):
     total_loss = 0.
     train_batches = list(zip(train_user, train_td, train_ld, train_loc, train_dst))
     for j, train_batch in enumerate(tqdm.tqdm(train_batches, desc="train")):
-        #inner_batches = data_loader.inner_iter(train_batch, batch_size)
-        #for k, inner_batch in inner_batches:
-        batch_user, batch_td, batch_ld, batch_loc, batch_dst = train_batch#inner_batch)
-        if len(batch_loc) < 3:
-            continue
-        total_loss += run(batch_user, batch_td, batch_ld, batch_loc, batch_dst, step=1)
+        inner_batches = data_loader.inner_iter(train_batch, batch_size)
+        for k, inner_batch in inner_batches:
+            batch_user, batch_td, batch_ld, batch_loc, batch_dst = inner_batch #train_batch
+            if len(batch_loc) < 3:
+                continue
+            total_loss += run(batch_user, batch_td, batch_ld, batch_loc, batch_dst, step=1)
         if (j+1) % 2000 == 0:
-           print("batch #{:d}: ".format(j+1), "batch_loss :", total_loss/j, datetime.datetime.now())
+           print("batch #{:d}: ".format(j+1), "batch_loss :", total_loss/j, datetime.datetime.now(), flush=True)
     # Evaluation
     if (i+1) % evaluate_every == 0:
-        print("==================================================================================")
-        print("Evaluation at epoch #{:d}: ".format(i+1), total_loss/j, datetime.datetime.now())
+        print("==================================================================================", flush=True)
+        print("Evaluation at epoch #{:d}: ".format(i+1), total_loss/j, datetime.datetime.now(), flush=True)
         valid_batches = list(zip(valid_user, valid_td, valid_ld, valid_loc, valid_dst))
         print_score(valid_batches, step=2)
 
 # Testing
-print("Training End..")
-print("==================================================================================")
-print("Test: ")
+print("Training End..", flush=True)
+print("==================================================================================", flush=True)
+print("Test: ", flush=True)
 test_batches = list(zip(test_user, test_td, test_ld, test_loc, test_dst))
 print_score(test_batches, step=3)
