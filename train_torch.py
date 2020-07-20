@@ -196,12 +196,12 @@ for i in xrange(num_epochs):
     total_loss = 0.
     train_batches = list(zip(train_user, train_td, train_ld, train_loc, train_dst))
     for j, train_batch in enumerate(tqdm.tqdm(train_batches, desc="train")):
-        inner_batches = data_loader.inner_iter(train_batch, batch_size)
-        for k, inner_batch in inner_batches:
-            batch_user, batch_td, batch_ld, batch_loc, batch_dst = inner_batch #train_batch
-            if len(batch_loc) < 3:
-                continue
-            total_loss += run(batch_user, batch_td, batch_ld, batch_loc, batch_dst, step=1)
+        #inner_batches = data_loader.inner_iter(train_batch, batch_size)
+        #for k, inner_batch in inner_batches:
+        batch_user, batch_td, batch_ld, batch_loc, batch_dst = train_batch  # inner_batch
+        if len(batch_loc) < 3:
+            continue
+        total_loss += run(batch_user, batch_td, batch_ld, batch_loc, batch_dst, step=1)
         if (j+1) % 2000 == 0:
            print("batch #{:d}: ".format(j+1), "batch_loss :", total_loss/j, datetime.datetime.now(), flush=True)
     # Evaluation
