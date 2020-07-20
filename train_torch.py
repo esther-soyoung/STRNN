@@ -26,7 +26,7 @@ test_file = "./prepro_test_50.txt"
 # Model Hyperparameters
 dim = 13    # dimensionality
 ww = 360  # winodw width (6h)
-up_time = 560632.0  # min
+up_time = 560632.0  # min (389 days)
 lw_time = 0.
 up_dist = 457.335   # km
 lw_dist = 0.
