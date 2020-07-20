@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-
+import sys
 import os
 import datetime
 import csv
@@ -11,13 +11,16 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import data_loader
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+
 # Parameters
 # ==================================================
 ftype = torch.cuda.FloatTensor
 ltype = torch.cuda.LongTensor
 
 # Data loading params
-train_file = "../dataset/loc-gowalla_totalCheckins.txt"
+train_file = "data/Gowalla/Gowalla_totalCheckins.txt"
+#train_file = "data/Foursquare/clean_TSMC2014_NYC.txt"
 
 # Model Hyperparameters
 dim = 13    # dimensionality
@@ -67,6 +70,9 @@ class STRNNModule(nn.Module):
         trg_t = times[i] - ww
         tmp_t = times[i]
         tmp_i = i-1
+        print(times[:i])
+        print(type(times[:i]))
+        sys.exit()
         for idx, t_w in enumerate(reversed(times[:i]), start=1):
             if t_w.data.cpu().numpy() == trg_t.data.cpu().numpy():
                 return i-idx
@@ -128,11 +134,16 @@ class STRNNModule(nn.Module):
 ###############################################################################################
 def run(user, time, lati, longi, loc, step):
 
-    user = Variable(torch.from_numpy(np.asarray([user]))).type(ltype)
-    time = Variable(torch.from_numpy(np.asarray(time))).type(ftype)
-    lati = Variable(torch.from_numpy(np.asarray(lati))).type(ftype)
-    longi = Variable(torch.from_numpy(np.asarray(longi))).type(ftype)
-    loc = Variable(torch.from_numpy(np.asarray(loc))).type(ltype)
+    user = np.asarray([user])
+    time = np.asarray(time)
+    lati = np.asarray(lati)
+    longi = np.asarray(longi)
+    loc = np.asarray(loc)
+   # user = Variable(torch.from_numpy(np.asarray([user]))).type(ltype)
+   # time = Variable(torch.from_numpy(np.asarray(time))).type(ftype)
+   # lati = Variable(torch.from_numpy(np.asarray(lati))).type(ftype)
+   # longi = Variable(torch.from_numpy(np.asarray(longi))).type(ftype)
+   # loc = Variable(torch.from_numpy(np.asarray(loc))).type(ltype)
 
     rnn_output = strnn_model(user, time, lati, longi, loc, step)#, neg_lati, neg_longi, neg_loc, step)
 
@@ -140,7 +151,8 @@ def run(user, time, lati, longi, loc, step):
 strnn_model = STRNNModule().cuda()
 
 print "Making train file..."
-f = open("./prepro_train_%s.txt"%lw_time, 'w')
+#f = open("data/Foursquare/prepro_train_%s.txt"%lw_time, 'w')
+f = open("data/Gowalla/prepro_train_%s.txt"%lw_time, 'w')
 # Training
 train_batches = list(zip(train_time, train_lati, train_longi, train_loc))
 for j, train_batch in enumerate(tqdm.tqdm(train_batches, desc="train")):
@@ -149,7 +161,8 @@ for j, train_batch in enumerate(tqdm.tqdm(train_batches, desc="train")):
 f.close()
 
 print "Making valid file..."
-f = open("./prepro_valid_%s.txt"%lw_time, 'w')
+#f = open("data/Foursquare/prepro_valid_%s.txt"%lw_time, 'w')
+f = open("data/Gowalla/prepro_valid_%s.txt"%lw_time, 'w')
 # Eavludating
 valid_batches = list(zip(valid_time, valid_lati, valid_longi, valid_loc))
 for j, valid_batch in enumerate(tqdm.tqdm(valid_batches, desc="valid")):
@@ -158,7 +171,8 @@ for j, valid_batch in enumerate(tqdm.tqdm(valid_batches, desc="valid")):
 f.close()
 
 print "Making test file..."
-f = open("./prepro_test_%s.txt"%lw_time, 'w')
+#f = open("data/Foursquare/prepro_test_%s.txt"%lw_time, 'w')
+f = open("data/Gowalla/prepro_test_%s.txt"%lw_time, 'w')
 # Testing
 test_batches = list(zip(test_time, test_lati, test_longi, test_loc))
 for j, test_batch in enumerate(tqdm.tqdm(test_batches, desc="test")):
