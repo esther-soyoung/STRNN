@@ -30,7 +30,7 @@ up_time = 560632.0  # min (389 days)
 lw_time = 0.
 up_dist = 457.335   # km
 lw_dist = 0.
-reg_lambda = 0.1
+reg_lambda = 0.01
 
 # Training Parameters
 batch_size = 2
